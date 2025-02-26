@@ -360,44 +360,7 @@ namespace DataBaseFirst
             }
         }
 
-        private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            ResetBooks((Author)comboBox1.SelectedItem);
-        }
-
-
-
-        private void ResetBooks(Author a)
-        {
-            listBox1.Items.Clear();
-            using (var db = new BooksContext())
-            {
-                if (checkBox1.Checked)
-                {
-                    var query = from b in db.Books
-                                where b.Author.Name == a.Name
-                                select b;
-
-                    foreach (var book in query)
-                    {
-                        listBox1.Items.Add(book);
-                    }
-                }
-                else
-                {
-                    var query = from b in db.Books
-                                select b;
-
-                    foreach (var book in query)
-                    {
-                        listBox1.Items.Add(book);
-                    }
-
-                }
-
-            }
-
-        }
+       
 
         private void SaveToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -455,53 +418,87 @@ namespace DataBaseFirst
             }
         }
 
+
+        private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            var a = (Author)comboBox1.SelectedItem;
+            ResetBooks(a);
+        }
+
+
+
+        private void ResetBooks(Author a)
+        {
+          
+            using (var db = new BooksContext())
+            {
+               
+                    if (checkBox1.Checked)
+                    {
+                        
+                    }
+                    else
+                    {
+                     
+                    }
+                 
+            }
+
+        }
+
+
         public void Load(string path)
         {
             StreamReader sr = new StreamReader(path);
             try
             {
                 string line;
-                var authors = new List<Author>();
 
                 using (var db = new BooksContext())
                 {
                     while ((line = sr.ReadLine()) != null)
                     {
-                
                         var author = db.Authors
-                                       .Single(a => a.Name == line); 
+                                        .SingleOrDefault(a => a.Name == line);
 
                      
                         if (author == null)
                         {
-                            author = new Author { Name = line }; 
+                            author = new Author { Name = line };
                             db.Authors.Add(author);
                         }
 
-                       
                         while ((line = sr.ReadLine()) != null && line != "")
                         {
-                            var book = new Book 
+                            var book = new Book
                             {
                                 Name = line,
                                 Author = author
-                            }; 
+                            };
 
-                            author.Books.Add(book); 
+                            author.Books.Add(book);
                         }
+
+                        db.SaveChanges();
+
+
+
+                        var query = from b in db.Authors
+                                    select b;
+                        comboBox1.DataSource = query.ToList();
+                        comboBox1.DisplayMember = "Name";
+
+                        var query2 = from b in db.Books
+                                     select b;
+                        listBox1.DataSource = query2.ToList();
+                        listBox1.DisplayMember = "Name";
+
+
                     }
 
-          
-                    db.SaveChanges();
 
-                    authors = db.Authors.ToList();
 
-                   
-                    comboBox1.DataSource = null; 
-                    comboBox1.DataSource = authors; 
-                    comboBox1.DisplayMember = "Name";
 
-                    ResetBooks((Author)comboBox1.SelectedItem);
                 }
             }
             catch (Exception e)
@@ -513,8 +510,6 @@ namespace DataBaseFirst
                 sr.Close();
             }
         }
-
-
 
 
 
