@@ -422,75 +422,91 @@ namespace DataBaseFirst
             }
         }
 
-        //public void Save(string path)
-        //{
-        //    StreamWriter sw = new StreamWriter(path, false);
-        //    try
-        //    {
-        //        foreach (Author author in authors)
-        //        {
-        //            sw.WriteLine(author.Name);
+        public void Save(string path)
+        {
+            StreamWriter sw = new StreamWriter(path, false);
 
-        //            foreach (Book book in author.Books)
-        //            {
-        //                sw.WriteLine(book.Name);
-        //            }
+            try
+            {
+                using (var db = new BooksContext())
+                {
+                    var authors = db.Authors.Include(a => a.Books).ToList();
 
-        //            sw.WriteLine();
-        //        }
-        //    }
-        //    catch (Exception e)
-        //    {
-        //        MessageBox.Show("Ошибка сохранения: " + e.Message, "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
-        //    }
-        //    finally
-        //    {
-        //        sw.Close();
-        //    }
-        //}
+                    foreach (Author author in authors)
+                    {
+                        sw.WriteLine(author.Name);
 
-        //public void Load(string path)
-        //{
-        //    StreamReader sr = new StreamReader(path);
-        //    try
-        //    {
-        //        string line;
-        //        comboBox1.Items.Clear();
-        //        authors.Clear();
+                        foreach (Book book in author.Books)
+                        {
+                            sw.WriteLine(book.Name);
+                        }
 
-        //        while ((line = sr.ReadLine()) != null)
-        //        {
+                        sw.WriteLine();
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show("Ошибка сохранения: " + e.Message, "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            finally
+            {
+                sw.Close();
+            }
+        }
 
-        //            Author author = new Author
-        //            {
-        //                Name = line
-        //            };
+        public void Load(string path)
+        {
+            StreamReader sr = new StreamReader(path);
+            try
+            {
+                string line;
+                comboBox1.Items.Clear();
+                var authors = new List<Author>();
 
+                using (var db = new BooksContext())
+                {
+                    while ((line = sr.ReadLine()) != null)
+                    {
+                        var author = db.Authors
+                                       .Where(a => a.Name == line)
+                                       .Single(); 
 
-        //            while ((line = sr.ReadLine()) != null && line != "")
-        //            {
-        //                Book book = new Book
-        //                {
-        //                    Name = line
-        //                };
+                        while ((line = sr.ReadLine()) != null && line != "")
+                        {
+                            Book book = new Book
+                            {
+                                Name = line
+                            };
+                            author.Books.Add(book);
+                        }
 
-        //                author.Books.Add(book);
-        //            }
+                      
+                        if (!db.Authors.Contains(author))
+                        {
+                            db.Authors.Add(author);
+                        }
+                    }
 
-        //            authors.Add(author);
-        //            comboBox1.Items.Add(author);
-        //        }
-        //        ResetBooks(null);
-        //    }
-        //    catch (Exception e)
-        //    {
-        //        MessageBox.Show("Ошибка загрузки: " + e.Message, "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
-        //    }
-        //    finally
-        //    {
-        //        sr.Close();
-        //    }
-        //}
+                    db.SaveChanges();
+
+                    authors = db.Authors.ToList();
+                    comboBox1.DataSource = authors;
+                    comboBox1.DisplayMember = "Name";
+
+                    ResetBooks((Author)comboBox1.SelectedItem);
+                }
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show("Ошибка загрузки: " + e.Message, "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            finally
+            {
+                sr.Close();
+            }
+        }
+
 
 
     }
