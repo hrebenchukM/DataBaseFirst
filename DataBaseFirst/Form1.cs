@@ -425,26 +425,34 @@ namespace DataBaseFirst
             ResetBooks(a);
         }
 
-
-
         private void ResetBooks(Author a)
         {
-          
+            listBox1.DataSource = null;
             using (var db = new BooksContext())
             {
-               
-                    if (checkBox1.Checked)
-                    {
-                        
-                    }
-                    else
-                    {
-                     
-                    }
-                 
-            }
 
+                if (checkBox1.Checked)
+                {
+                    var query1 = from b in db.Books
+                                 where b.AuthorId == a.Id
+                                 select b;
+                    listBox1.DataSource = query1.ToList();
+                    listBox1.DisplayMember = "Name";
+                }
+                else
+                {
+
+                    var query2 = from b in db.Books
+                                 select b;
+                    listBox1.DataSource = query2.ToList();
+                    listBox1.DisplayMember = "Name";
+                }
+
+            }
         }
+
+
+
 
 
         public void Load(string path)

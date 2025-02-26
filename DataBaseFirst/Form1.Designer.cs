@@ -75,6 +75,7 @@
             comboBox1.Name = "comboBox1";
             comboBox1.Size = new Size(463, 23);
             comboBox1.TabIndex = 4;
+            comboBox1.SelectedIndexChanged += comboBox1_SelectedIndexChanged;
             // 
             // menuStrip1
             // 
@@ -95,21 +96,21 @@
             // открытьToolStripMenuItem
             // 
             открытьToolStripMenuItem.Name = "открытьToolStripMenuItem";
-            открытьToolStripMenuItem.Size = new Size(180, 22);
+            открытьToolStripMenuItem.Size = new Size(133, 22);
             открытьToolStripMenuItem.Text = "Открыть";
             открытьToolStripMenuItem.Click += OpenToolStripMenuItem_Click;
             // 
             // сохранитьToolStripMenuItem
             // 
             сохранитьToolStripMenuItem.Name = "сохранитьToolStripMenuItem";
-            сохранитьToolStripMenuItem.Size = new Size(180, 22);
+            сохранитьToolStripMenuItem.Size = new Size(133, 22);
             сохранитьToolStripMenuItem.Text = "Сохранить";
             сохранитьToolStripMenuItem.Click += SaveToolStripMenuItem_Click;
             // 
             // выйтиToolStripMenuItem
             // 
             выйтиToolStripMenuItem.Name = "выйтиToolStripMenuItem";
-            выйтиToolStripMenuItem.Size = new Size(180, 22);
+            выйтиToolStripMenuItem.Size = new Size(133, 22);
             выйтиToolStripMenuItem.Text = "Выйти";
             // 
             // опцииToolStripMenuItem
