@@ -466,13 +466,17 @@ namespace DataBaseFirst
                 {
                     while ((line = sr.ReadLine()) != null)
                     {
-                        var author = db.Authors
-                                        .SingleOrDefault(a => a.Name == line);
+                        var author = (from a in db.Authors
+                                      where a.Name == line
+                                      select a).SingleOrDefault();
 
-                     
+
                         if (author == null)
                         {
-                            author = new Author { Name = line };
+                            author = new Author 
+                            {
+                                Name = line 
+                            };
                             db.Authors.Add(author);
                         }
 
@@ -489,8 +493,6 @@ namespace DataBaseFirst
 
                         db.SaveChanges();
 
-
-
                         var query = from b in db.Authors
                                     select b;
                         comboBox1.DataSource = query.ToList();
@@ -503,10 +505,6 @@ namespace DataBaseFirst
 
 
                     }
-
-
-
-
                 }
             }
             catch (Exception e)
