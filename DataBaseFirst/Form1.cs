@@ -404,7 +404,7 @@ namespace DataBaseFirst
             if (saveFileDialog1.ShowDialog() == DialogResult.OK)
             {
                 MessageBox.Show(saveFileDialog1.FileName, "Сохранение файла", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                //Save(saveFileDialog1.FileName);
+                Save(saveFileDialog1.FileName);
 
             }
         }
@@ -417,7 +417,7 @@ namespace DataBaseFirst
             if (openFileDialog1.ShowDialog() == DialogResult.OK)
             {
                 MessageBox.Show(openFileDialog1.FileName, "Открытие файла", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                //Load(openFileDialog1.FileName);
+                Load(openFileDialog1.FileName);
 
             }
         }
@@ -461,37 +461,44 @@ namespace DataBaseFirst
             try
             {
                 string line;
-                comboBox1.Items.Clear();
                 var authors = new List<Author>();
 
                 using (var db = new BooksContext())
                 {
                     while ((line = sr.ReadLine()) != null)
                     {
+                
                         var author = db.Authors
-                                       .Where(a => a.Name == line)
-                                       .Single(); 
+                                       .Single(a => a.Name == line); 
 
-                        while ((line = sr.ReadLine()) != null && line != "")
+                     
+                        if (author == null)
                         {
-                            Book book = new Book
-                            {
-                                Name = line
-                            };
-                            author.Books.Add(book);
+                            author = new Author { Name = line }; 
+                            db.Authors.Add(author);
                         }
 
-                      
-                        if (!db.Authors.Contains(author))
+                       
+                        while ((line = sr.ReadLine()) != null && line != "")
                         {
-                            db.Authors.Add(author);
+                            var book = new Book 
+                            {
+                                Name = line,
+                                Author = author
+                            }; 
+
+                            author.Books.Add(book); 
                         }
                     }
 
+          
                     db.SaveChanges();
 
                     authors = db.Authors.ToList();
-                    comboBox1.DataSource = authors;
+
+                   
+                    comboBox1.DataSource = null; 
+                    comboBox1.DataSource = authors; 
                     comboBox1.DisplayMember = "Name";
 
                     ResetBooks((Author)comboBox1.SelectedItem);
@@ -506,6 +513,8 @@ namespace DataBaseFirst
                 sr.Close();
             }
         }
+
+
 
 
 
